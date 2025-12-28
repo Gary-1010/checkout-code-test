@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Checkout.com Flow Case Study (Next.js)
 
-## Getting Started
+## 📖 Overview
+This case study demonstrates how to integrate **Checkout.com Flow** into a Next.js application.  
+It covers:
+- Secure card capture and tokenization using Flow.
+- Handling redirects for iDEAL payments.
+- Displaying payment results on a success page.
+- Implementing a **refund flow** where users can enter an amount to refund and view updated payment details.
+- Customizing Flow’s UI (colors, fonts, borders) to match your site design.
 
-First, run the development server:
+---
 
+## 🔄 Payment Flow
+1. **Checkout Page**  
+   - Flow is initialized with your public key (`NEXT_PUBLIC_CKO_PUBLIC_KEY`) and a payment session.  
+   - Users enter card details or select alternative payment methods.  
+   - Flow handles tokenization and authentication.
+
+2. **Success Page**  
+   - After payment completion, the user is redirected to `/payments/success?cko-payment-id=...`.  
+   - The app fetches payment details from `/api/payment/[id]` using your secret key.  
+   - Payment JSON is displayed, along with a link to refund the payment.
+
+3. **Refund Page**  
+   - The user is redirected to `/payments/refund?cko-payment-id=...`.  
+   - The page shows the captured amount and allows the user to enter a refund amount.  
+   - On submission, `/api/refund/[id]` is called to process the refund.  
+   - The refund result is displayed, and the payment details are re-fetched to show the updated state.
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/<your-username>/<your-repo>.git
+cd <your-repo>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
+```bash
+yarn install
+```
+or
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Configure environment variables
+Create a `.env.local` file in the project root:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_CKO_PUBLIC_KEY=pk_sbox_your_public_key_here
+CKO_SECRET_KEY=sk_sbox_your_secret_key_here
+NEXT_PUBLIC_ENVIRONMENT=sandbox
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+```
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Run the development server
+```bash
+yarn dev
+```
+or
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📂 Project Structure
+```
+src/app/
+  ├── page.tsx                # Checkout page with Flow integration
+  ├── payments/
+  │   ├── success/page.tsx     # Success page showing payment details + refund link
+  │   └── refund/page.tsx      # Refund page with amount input and updated payment details
+  └── api/
+      ├── payment/[id]/route.ts # Fetch payment details from Checkout.com
+      └── refund/[id]/route.ts  # Process refunds via Checkout.com
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
